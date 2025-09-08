@@ -1,0 +1,12 @@
+---
+- name: Include installation tasks
+  include_tasks: install.yml
+  tags: install
+
+- name: Include repository management tasks
+  include_tasks: clone.yml
+  tags: clone,update
+
+- name: Include post-update tasks
+  include_tasks: post_update.yml
+  tags: post_update

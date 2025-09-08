@@ -1,0 +1,12 @@
+---
+- name: set_permissions
+  file:
+    path: "{{ git_repo_dest }}"
+    owner: "{{ git_repo_owner }}"
+    group: "{{ git_repo_group }}"
+    recurse: yes
+
+- name: restart_app
+  service:
+    name: "{{ app_service_name | default('nginx') }}"
+    state: restarted

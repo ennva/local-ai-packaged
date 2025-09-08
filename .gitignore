@@ -6,3 +6,15 @@ shared-backup/
 .env.test
 searxng/settings.yml
 searxng/uwsgi*
+
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.backup
+.terraform.lock.hcl
+
+# Ansible
+*.retry
+!ansible.cfg
+.vault_pass
+!.vault_pass.example

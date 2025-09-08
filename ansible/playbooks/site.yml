@@ -1,0 +1,28 @@
+---
+- name: Complete application deployment
+  hosts: vps_servers
+  vars_files:
+    - "{{ playbook_dir }}/../group_vars/all.yml"
+
+  pre_tasks:
+    - name: Update package cache
+      apt:
+        update_cache: yes
+      when: ansible_os_family == "Debian"
+
+  roles:
+    - role: git_repo
+      tags: git,deploy
+
+  post_tasks:
+    - name: Run application-specific setup
+      script: scripts/setup-app.sh
+      args:
+        chdir: "{{ git_repo_dest }}"
+      tags: setup
+
+    - name: Verify deployment
+      uri:
+        url: "http://localhost:8000/health"
+        status_code: 200
+      tags: verify

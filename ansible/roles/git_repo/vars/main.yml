@@ -1,0 +1,6 @@
+---
+# Role-specific variables
+required_packages:
+  - git
+  - curl
+  - unzip

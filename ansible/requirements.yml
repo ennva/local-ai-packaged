@@ -1,0 +1,5 @@
+---
+# Ansible role dependencies
+- src: git+https://github.com/geerlingguy/ansible-role-git
+  version: master
+  name: geerlingguy.git

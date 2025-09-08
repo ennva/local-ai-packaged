@@ -1,0 +1,15 @@
+---
+- name: Install required packages
+  package:
+    name: "{{ required_packages }}"
+    state: present
+  tags: packages
+
+- name: Ensure destination directory exists
+  file:
+    path: "{{ git_repo_dest }}"
+    state: directory
+    owner: "{{ git_repo_owner }}"
+    group: "{{ git_repo_group }}"
+    mode: "{{ git_repo_mode }}"
+  tags: directory

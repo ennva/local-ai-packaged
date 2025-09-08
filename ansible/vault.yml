@@ -1,0 +1,7 @@
+---
+# Encrypted sensitive data
+git_repo_token: "your-github-token-here"
+ssh_private_key: |
+  -----BEGIN RSA PRIVATE KEY-----
+  ...
+  -----END RSA PRIVATE KEY-----

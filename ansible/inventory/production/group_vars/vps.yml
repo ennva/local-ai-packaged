@@ -1,0 +1,7 @@
+---
+# VPS-specific variables
+app_user: deploy
+app_group: deploy
+app_home: "/home/{{ app_user }}"
+deploy_dir: "{{ app_home }}/app"
+backup_dir: "{{ app_home }}/backups"

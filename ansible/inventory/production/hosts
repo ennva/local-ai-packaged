@@ -1,0 +1,12 @@
+[all:vars]
+ansible_ssh_private_key_file=~/.ssh/hostinger_key
+
+[vps_servers]
+web-server-1 ansible_host=192.168.1.100 ansible_user=deploy
+web-server-2 ansible_host=192.168.1.101 ansible_user=deploy
+
+[app_servers:children]
+vps_servers
+
+[production:children]
+vps_servers

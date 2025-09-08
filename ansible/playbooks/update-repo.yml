@@ -1,0 +1,22 @@
+---
+- name: Update Git repository on VPS
+  hosts: vps_servers
+  vars_files:
+    - "{{ playbook_dir }}/../group_vars/all.yml"
+    - "{{ playbook_dir }}/../inventory/{{ inventory }}/group_vars/all.yml"
+
+  roles:
+    - role: git_repo
+      tags: git_repo
+
+  tasks:
+    - name: Validate deployment
+      command: git status --short
+      args:
+        chdir: "{{ git_repo_dest }}"
+      register: git_status
+      changed_when: false
+
+    - name: Show deployment status
+      debug:
+        msg: "Deployment completed. Git status: {{ git_status.stdout_lines }}"

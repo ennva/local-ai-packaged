@@ -1,0 +1,17 @@
+#!/bin/bash
+# Auto-generated deployment hook script
+# Created: {{ ansible_date_time.iso8601 }}
+
+set -e
+
+cd {{ git_repo_dest }}
+
+echo "Starting deployment at $(date)"
+echo "Pulling changes from {{ git_repo_url }} branch {{ git_repo_branch }}"
+
+git pull origin {{ git_repo_branch }}
+
+# Add your custom deployment commands below
+# e.g., npm install, composer install, database migrations, etc.
+
+echo "Deployment completed successfully at $(date)"

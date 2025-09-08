@@ -1,0 +1,5 @@
+---
+# Global variables
+git_repo_url: "https://github.com/yourusername/your-repo.git"
+git_branch: "main"
+git_depth: 1  # Shallow clone for faster updates

@@ -1,0 +1,31 @@
+---
+- name: Get current commit hash
+  command: git rev-parse --short HEAD
+  args:
+    chdir: "{{ git_repo_dest }}"
+  register: current_commit
+  changed_when: false
+  tags: info
+
+- name: Display commit information
+  debug:
+    msg: "Repository at {{ git_repo_dest }} is at commit {{ current_commit.stdout }}"
+  tags: info
+
+- name: Create deployment hook script
+  template:
+    src: update-hook.j2
+    dest: "/usr/local/bin/update-{{ git_repo_dest | basename }}.sh"
+    mode: "0755"
+    owner: "{{ git_repo_owner }}"
+    group: "{{ git_repo_group }}"
+  tags: hooks
+
+- name: Register deployment in log
+  lineinfile:
+    path: "{{ git_repo_dest }}/deployments.log"
+    line: "{{ ansible_date_time.iso8601 }} - {{ current_commit.stdout }} - {{ ansible_hostname }}"
+    create: yes
+    owner: "{{ git_repo_owner }}"
+    group: "{{ git_repo_group }}"
+  tags: logging

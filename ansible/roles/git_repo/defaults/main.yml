@@ -1,0 +1,15 @@
+---
+# Default variables for git_repo role
+git_repo_dest: "{{ deploy_dir | default('/opt/app') }}"
+git_repo_branch: "{{ git_branch | default('main') }}"
+git_repo_depth: "{{ git_depth | default(1) }}"
+git_repo_accept_hostkey: true
+git_repo_force: true
+git_repo_update: true
+git_repo_single_branch: true
+git_repo_owner: "{{ app_user | default('root') }}"
+git_repo_group: "{{ app_group | default('root') }}"
+git_repo_mode: "0755"
+git_repo_ssh_key: ""
+git_repo_clean_untracked: false
+git_repo_reset_changes: false
