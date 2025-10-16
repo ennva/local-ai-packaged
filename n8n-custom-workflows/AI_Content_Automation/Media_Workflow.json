@@ -1,0 +1,88 @@
+{
+  "name": "Media_Workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "path": "webhook/media/start",
+        "methods": [
+          "POST"
+        ],
+        "responseMode": "onReceived"
+      },
+      "id": "1",
+      "name": "Webhook Media Start",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [250, 300]
+    },
+    {
+      "parameters": {
+        "model": "dall-e-3",
+        "prompt": "Crée une image promotionnelle illustrant le texte suivant : {{$json.text}}. Style : professionnel, épuré, moderne."
+      },
+      "id": "2",
+      "name": "AI Image Generator",
+      "type": "n8n-nodes-base.openAi",
+      "typeVersion": 4,
+      "position": [450, 300]
+    },
+    {
+      "parameters": {
+        "options": {
+          "waitFor": "manual"
+        }
+      },
+      "id": "3",
+      "name": "Wait Image Approval",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 2,
+      "position": [650, 300]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{ \"data\": [{\"url\": \"{{$json.data[0].url}}\"}] }"
+      },
+      "id": "4",
+      "name": "Respond Media",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [850, 300]
+    }
+  ],
+  "connections": {
+    "Webhook Media Start": {
+      "main": [
+        [
+          {
+            "node": "AI Image Generator",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Image Generator": {
+      "main": [
+        [
+          {
+            "node": "Wait Image Approval",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait Image Approval": {
+      "main": [
+        [
+          {
+            "node": "Respond Media",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

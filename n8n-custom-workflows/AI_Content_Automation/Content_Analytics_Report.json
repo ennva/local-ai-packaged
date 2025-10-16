@@ -1,0 +1,30 @@
+{
+  "name": "Content_Analytics_Report",
+  "nodes": [
+    { "parameters": {}, "id": "1", "name": "Manual Trigger", "type": "n8n-nodes-base.manualTrigger", "typeVersion": 1 },
+    {
+      "parameters": {
+        "url": "https://api.linkedin.com/v2/organizationPageStatistics?q=organization&organization=urn:li:organization:XXXX",
+        "authentication": "oAuth2"
+      },
+      "id": "2",
+      "name": "Fetch LinkedIn Stats",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "model": "gpt-4o-mini",
+        "prompt": "Analyse ces statistiques et résume les insights principaux : {{$json}}"
+      },
+      "id": "3",
+      "name": "AI Report Generator",
+      "type": "n8n-nodes-base.openAi",
+      "typeVersion": 1
+    }
+  ],
+  "connections": {
+    "Manual Trigger": { "main": [[{ "node": "Fetch LinkedIn Stats", "type": "main", "index": 0 }]] },
+    "Fetch LinkedIn Stats": { "main": [[{ "node": "AI Report Generator", "type": "main", "index": 0 }]] }
+  }
+}

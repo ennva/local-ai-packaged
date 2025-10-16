@@ -1,0 +1,33 @@
+{
+  "name": "Content_Ideation_Generator",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "1",
+      "name": "Start Ideation",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "model": "gpt-4o-mini",
+        "prompt": "Tu es un expert en stratégie de contenu. Propose 5 idées de posts LinkedIn, Instagram et YouTube sur le thème suivant : {{$json.topic}}. Détaille pour chaque idée : le hook, le message clé et un CTA."
+      },
+      "id": "2",
+      "name": "AI Generate Ideas",
+      "type": "n8n-nodes-base.openAi",
+      "typeVersion": 1
+    },
+    {
+      "parameters": {},
+      "id": "3",
+      "name": "Return Data",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1
+    }
+  ],
+  "connections": {
+    "Start Ideation": { "main": [[{ "node": "AI Generate Ideas", "type": "main", "index": 0 }]] },
+    "AI Generate Ideas": { "main": [[{ "node": "Return Data", "type": "main", "index": 0 }]] }
+  }
+}

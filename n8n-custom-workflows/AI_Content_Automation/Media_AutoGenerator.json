@@ -1,0 +1,21 @@
+{
+  "name": "Media_AutoGenerator",
+  "nodes": [
+    { "parameters": {}, "id": "1", "name": "Webhook Trigger", "type": "n8n-nodes-base.webhook", "typeVersion": 1 },
+    {
+      "parameters": {
+        "model": "dall-e-3",
+        "prompt": "Génère une image promotionnelle pour le texte suivant : {{$json.text}}. Style : moderne, minimaliste, professionnel."
+      },
+      "id": "2",
+      "name": "AI Image Generator",
+      "type": "n8n-nodes-base.openAi",
+      "typeVersion": 1
+    },
+    { "parameters": {}, "id": "3", "name": "Save to Google Drive", "type": "n8n-nodes-base.googleDrive", "typeVersion": 1 }
+  ],
+  "connections": {
+    "Webhook Trigger": { "main": [[{ "node": "AI Image Generator", "type": "main", "index": 0 }]] },
+    "AI Image Generator": { "main": [[{ "node": "Save to Google Drive", "type": "main", "index": 0 }]] }
+  }
+}

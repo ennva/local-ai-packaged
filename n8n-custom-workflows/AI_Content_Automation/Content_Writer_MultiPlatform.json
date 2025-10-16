@@ -1,0 +1,21 @@
+{
+  "name": "Content_Writer_MultiPlatform",
+  "nodes": [
+    { "parameters": {}, "id": "1", "name": "Manual Trigger", "type": "n8n-nodes-base.manualTrigger", "typeVersion": 1 },
+    {
+      "parameters": {
+        "model": "gpt-4o-mini",
+        "prompt": "Crée du contenu pour plusieurs plateformes sur le sujet suivant : {{$json.idea}}. Format :\n- LinkedIn : texte long\n- Instagram : texte court + 3 hashtags\n- YouTube : titre + description courte\n- TikTok : script vidéo concis."
+      },
+      "id": "2",
+      "name": "AI Writer",
+      "type": "n8n-nodes-base.openAi",
+      "typeVersion": 1
+    },
+    { "parameters": {}, "id": "3", "name": "Output", "type": "n8n-nodes-base.noOp", "typeVersion": 1 }
+  ],
+  "connections": {
+    "Manual Trigger": { "main": [[{ "node": "AI Writer", "type": "main", "index": 0 }]] },
+    "AI Writer": { "main": [[{ "node": "Output", "type": "main", "index": 0 }]] }
+  }
+}

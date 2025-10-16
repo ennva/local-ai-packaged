@@ -1,0 +1,23 @@
+{
+  "name": "Content_Publisher_Auto",
+  "nodes": [
+    { "parameters": {}, "id": "1", "name": "Webhook Trigger", "type": "n8n-nodes-base.webhook", "typeVersion": 1 },
+    {
+      "parameters": {
+        "url": "https://api.linkedin.com/v2/ugcPosts",
+        "method": "POST",
+        "authentication": "oAuth2",
+        "bodyParametersJson": "{ \"author\": \"urn:li:person:XXXX\", \"lifecycleState\": \"PUBLISHED\", \"specificContent\": { \"com.linkedin.ugc.ShareContent\": { \"shareCommentary\": { \"text\": \"{{$json.linkedin_text}}\" }, \"shareMediaCategory\": \"NONE\" } } }"
+      },
+      "id": "2",
+      "name": "Post to LinkedIn",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1
+    },
+    { "parameters": {}, "id": "3", "name": "Finish", "type": "n8n-nodes-base.noOp", "typeVersion": 1 }
+  ],
+  "connections": {
+    "Webhook Trigger": { "main": [[{ "node": "Post to LinkedIn", "type": "main", "index": 0 }]] },
+    "Post to LinkedIn": { "main": [[{ "node": "Finish", "type": "main", "index": 0 }]] }
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "name": "Content_Review_Scheduler",
+  "nodes": [
+    { "parameters": {}, "id": "1", "name": "Manual Trigger", "type": "n8n-nodes-base.manualTrigger", "typeVersion": 1 },
+    {
+      "parameters": {
+        "sheetId": "YOUR_GOOGLE_SHEET_ID",
+        "range": "Validation!A1:E20"
+      },
+      "id": "2",
+      "name": "Send to Review Sheet",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "options": { "waitFor": "manual" }
+      },
+      "id": "3",
+      "name": "Wait for Approval",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1
+    },
+    { "parameters": {}, "id": "4", "name": "Schedule Post", "type": "n8n-nodes-base.scheduleTrigger", "typeVersion": 1 }
+  ],
+  "connections": {
+    "Manual Trigger": { "main": [[{ "node": "Send to Review Sheet", "type": "main", "index": 0 }]] },
+    "Send to Review Sheet": { "main": [[{ "node": "Wait for Approval", "type": "main", "index": 0 }]] },
+    "Wait for Approval": { "main": [[{ "node": "Schedule Post", "type": "main", "index": 0 }]] }
+  }
+}

@@ -1,0 +1,170 @@
+{
+  "name": "AI_Content_Automation_Master",
+  "nodes": [
+    {
+      "parameters": {
+        "path": "ai-content/start",
+        "methods": ["POST"]
+      },
+      "id": "1",
+      "name": "Start Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [200, 300]
+    },
+    {
+      "parameters": {
+        "url": "https://n8n.yourdomain.com/webhook/ideation/start",
+        "method": "POST",
+        "jsonParameters": true,
+        "bodyParametersJson": "{ \"topic\": \"{{$json.topic}}\", \"tone\": \"{{$json.tone}}\" }"
+      },
+      "id": "2",
+      "name": "Call Ideation Workflow",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [400, 300]
+    },
+    {
+      "parameters": {
+        "options": { "waitFor": "manual" }
+      },
+      "id": "3",
+      "name": "Wait After Ideation",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1,
+      "position": [600, 300]
+    },
+    {
+      "parameters": {
+        "url": "https://n8n.yourdomain.com/webhook/writer/start",
+        "method": "POST",
+        "jsonParameters": true,
+        "bodyParametersJson": "{ \"idea\": \"{{$json[\"Call Ideation Workflow\"].data[0].ideas[0]}}\", \"tone\": \"{{$json.tone}}\", \"platforms\": {{$json.platforms}} }"
+      },
+      "id": "4",
+      "name": "Call Writer Workflow",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [800, 300]
+    },
+    {
+      "parameters": { "options": { "waitFor": "manual" } },
+      "id": "5",
+      "name": "Wait After Writer",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1,
+      "position": [1000, 300]
+    },
+    {
+      "parameters": {
+        "url": "https://n8n.yourdomain.com/webhook/media/start",
+        "method": "POST",
+        "jsonParameters": true,
+        "bodyParametersJson": "{ \"text\": \"{{$json[\"Call Writer Workflow\"].data[0].linkedin_text}}\" }"
+      },
+      "id": "6",
+      "name": "Call Media Generator",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [1200, 300]
+    },
+    {
+      "parameters": { "options": { "waitFor": "manual" } },
+      "id": "7",
+      "name": "Wait After Media",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1,
+      "position": [1400, 300]
+    },
+    {
+      "parameters": {
+        "url": "https://n8n.yourdomain.com/webhook/review/start",
+        "method": "POST",
+        "jsonParameters": true,
+        "bodyParametersJson": "{ \"content\": {{$json[\"Call Writer Workflow\"].data[0]}}, \"image_url\": \"{{$json[\"Call Media Generator\"].data[0].url}}\" }"
+      },
+      "id": "8",
+      "name": "Call Review Scheduler",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [1600, 300]
+    },
+    {
+      "parameters": { "options": { "waitFor": "manual" } },
+      "id": "9",
+      "name": "Wait After Review",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1,
+      "position": [1800, 300]
+    },
+    {
+      "parameters": {
+        "url": "https://n8n.yourdomain.com/webhook/publisher/start",
+        "method": "POST",
+        "jsonParameters": true,
+        "bodyParametersJson": "{ \"linkedin_text\": \"{{$json[\"Call Writer Workflow\"].data[0].linkedin_text}}\", \"image_url\": \"{{$json[\"Call Media Generator\"].data[0].url}}\" }"
+      },
+      "id": "10",
+      "name": "Call Publisher",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [2000, 300]
+    },
+    {
+      "parameters": { "options": { "waitFor": "manual" } },
+      "id": "11",
+      "name": "Wait After Publisher",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1,
+      "position": [2200, 300]
+    },
+    {
+      "parameters": {
+        "url": "https://n8n.yourdomain.com/webhook/analytics/start",
+        "method": "POST",
+        "jsonParameters": true,
+        "bodyParametersJson": "{ \"published_urls\": {{$json[\"Call Publisher\"].data[0].urls}} }"
+      },
+      "id": "12",
+      "name": "Call Analytics",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [2400, 300]
+    },
+    {
+      "parameters": { "options": { "waitFor": "manual" } },
+      "id": "13",
+      "name": "Wait After Analytics",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1,
+      "position": [2600, 300]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{ \"result\": \"Pipeline completé avec succès !\", \"data\": {{$json[\"Call Analytics\"].data[0]}} }"
+      },
+      "id": "14",
+      "name": "Return Final Result",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [2800, 300]
+    }
+  ],
+  "connections": {
+    "Start Webhook": { "main": [[{ "node": "Call Ideation Workflow", "type": "main", "index": 0 }]] },
+    "Call Ideation Workflow": { "main": [[{ "node": "Wait After Ideation", "type": "main", "index": 0 }]] },
+    "Wait After Ideation": { "main": [[{ "node": "Call Writer Workflow", "type": "main", "index": 0 }]] },
+    "Call Writer Workflow": { "main": [[{ "node": "Wait After Writer", "type": "main", "index": 0 }]] },
+    "Wait After Writer": { "main": [[{ "node": "Call Media Generator", "type": "main", "index": 0 }]] },
+    "Call Media Generator": { "main": [[{ "node": "Wait After Media", "type": "main", "index": 0 }]] },
+    "Wait After Media": { "main": [[{ "node": "Call Review Scheduler", "type": "main", "index": 0 }]] },
+    "Call Review Scheduler": { "main": [[{ "node": "Wait After Review", "type": "main", "index": 0 }]] },
+    "Wait After Review": { "main": [[{ "node": "Call Publisher", "type": "main", "index": 0 }]] },
+    "Call Publisher": { "main": [[{ "node": "Wait After Publisher", "type": "main", "index": 0 }]] },
+    "Wait After Publisher": { "main": [[{ "node": "Call Analytics", "type": "main", "index": 0 }]] },
+    "Call Analytics": { "main": [[{ "node": "Wait After Analytics", "type": "main", "index": 0 }]] },
+    "Wait After Analytics": { "main": [[{ "node": "Return Final Result", "type": "main", "index": 0 }]] }
+  }
+}

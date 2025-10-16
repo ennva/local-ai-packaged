@@ -1,0 +1,103 @@
+{
+  "name": "Publisher_Workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "path": "webhook/publisher/start",
+        "methods": [
+          "POST"
+        ],
+        "responseMode": "onReceived"
+      },
+      "id": "1",
+      "name": "Webhook Publisher Start",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [250, 300]
+    },
+    {
+      "parameters": {
+        "url": "https://api.linkedin.com/v2/ugcPosts",
+        "method": "POST",
+        "authentication": "predefinedCredentialType",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "X-Restli-Protocol-Version",
+              "value": "2.0.0"
+            }
+          ]
+        },
+        "bodyParametersJson": "{ \"author\": \"urn:li:person:XXXX\", \"lifecycleState\": \"PUBLISHED\", \"specificContent\": { \"com.linkedin.ugc.ShareContent\": { \"shareCommentary\": { \"text\": \"{{$json.linkedin_text}}\" }, \"shareMediaCategory\": \"NONE\" } } }"
+      },
+      "id": "2",
+      "name": "Post to LinkedIn",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [450, 300]
+    },
+    {
+      "parameters": {
+        "options": {
+          "waitFor": "manual"
+        }
+      },
+      "id": "3",
+      "name": "Wait Publication Check",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 2,
+      "position": [650, 300]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{ \"data\": [{\"urls\": [\"https://linkedin.com/feed/update/...\"]}] }"
+      },
+      "id": "4",
+      "name": "Respond Publisher",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [850, 300]
+    }
+  ],
+  "connections": {
+    "Webhook Publisher Start": {
+      "main": [
+        [
+          {
+            "node": "Post to LinkedIn",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Post to LinkedIn": {
+      "main": [
+        [
+          {
+            "node": "Wait Publication Check",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait Publication Check": {
+      "main": [
+        [
+          {
+            "node": "Respond Publisher",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

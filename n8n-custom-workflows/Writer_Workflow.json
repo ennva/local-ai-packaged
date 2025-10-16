@@ -1,0 +1,88 @@
+{
+  "name": "Writer_Workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "path": "webhook/writer/start",
+        "methods": [
+          "POST"
+        ],
+        "responseMode": "onReceived"
+      },
+      "id": "1",
+      "name": "Webhook Writer Start",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [250, 300]
+    },
+    {
+      "parameters": {
+        "model": "gpt-4o-mini",
+        "prompt": "Crée du contenu pour {{$json.platforms}} sur le sujet suivant : {{$json.idea}}. Ton : {{$json.tone}}.\nFormat attendu :\n{\n  \"linkedin_text\": \"\",\n  \"instagram_text\": \"\",\n  \"youtube_title\": \"\",\n  \"tiktok_script\": \"\"\n}"
+      },
+      "id": "2",
+      "name": "AI MultiPlatform Writer",
+      "type": "n8n-nodes-base.openAi",
+      "typeVersion": 4,
+      "position": [450, 300]
+    },
+    {
+      "parameters": {
+        "options": {
+          "waitFor": "manual"
+        }
+      },
+      "id": "3",
+      "name": "Wait Writer Approval",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 2,
+      "position": [650, 300]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{ \"data\": [{{$json}}] }"
+      },
+      "id": "4",
+      "name": "Respond Writer",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [850, 300]
+    }
+  ],
+  "connections": {
+    "Webhook Writer Start": {
+      "main": [
+        [
+          {
+            "node": "AI MultiPlatform Writer",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI MultiPlatform Writer": {
+      "main": [
+        [
+          {
+            "node": "Wait Writer Approval",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait Writer Approval": {
+      "main": [
+        [
+          {
+            "node": "Respond Writer",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

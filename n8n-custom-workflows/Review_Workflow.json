@@ -1,0 +1,88 @@
+{
+  "name": "Review_Workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "path": "webhook/review/start",
+        "methods": [
+          "POST"
+        ],
+        "responseMode": "onReceived"
+      },
+      "id": "1",
+      "name": "Webhook Review Start",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [250, 300]
+    },
+    {
+      "parameters": {
+        "sheetId": "YOUR_GOOGLE_SHEET_ID",
+        "range": "Validation!A1:E20"
+      },
+      "id": "2",
+      "name": "Send for Review",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4,
+      "position": [450, 300]
+    },
+    {
+      "parameters": {
+        "options": {
+          "waitFor": "manual"
+        }
+      },
+      "id": "3",
+      "name": "Wait Manual Validation",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 2,
+      "position": [650, 300]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{ \"data\": [{\"status\": \"approved\"}] }"
+      },
+      "id": "4",
+      "name": "Respond Review",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [850, 300]
+    }
+  ],
+  "connections": {
+    "Webhook Review Start": {
+      "main": [
+        [
+          {
+            "node": "Send for Review",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send for Review": {
+      "main": [
+        [
+          {
+            "node": "Wait Manual Validation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait Manual Validation": {
+      "main": [
+        [
+          {
+            "node": "Respond Review",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

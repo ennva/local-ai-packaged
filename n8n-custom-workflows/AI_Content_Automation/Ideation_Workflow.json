@@ -1,0 +1,88 @@
+{
+  "name": "Ideation_Workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "path": "webhook/ideation/start",
+        "methods": [
+          "POST"
+        ],
+        "responseMode": "onReceived"
+      },
+      "id": "1",
+      "name": "Webhook Ideation Start",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [250, 300]
+    },
+    {
+      "parameters": {
+        "model": "gpt-4o-mini",
+        "prompt": "Propose 5 idées de contenu LinkedIn et Instagram sur le thème suivant : {{$json.topic}}. Le ton doit être {{$json.tone}}. Retourne les idées dans un tableau JSON nommé 'ideas'."
+      },
+      "id": "2",
+      "name": "AI Generate Ideas",
+      "type": "n8n-nodes-base.openAi",
+      "typeVersion": 4,
+      "position": [450, 300]
+    },
+    {
+      "parameters": {
+        "options": {
+          "waitFor": "manual"
+        }
+      },
+      "id": "3",
+      "name": "Wait Review Ideas",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 2,
+      "position": [650, 300]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{ \"data\": [{\"ideas\": {{$json}}}] }"
+      },
+      "id": "4",
+      "name": "Respond Ideation",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [850, 300]
+    }
+  ],
+  "connections": {
+    "Webhook Ideation Start": {
+      "main": [
+        [
+          {
+            "node": "AI Generate Ideas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Generate Ideas": {
+      "main": [
+        [
+          {
+            "node": "Wait Review Ideas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait Review Ideas": {
+      "main": [
+        [
+          {
+            "node": "Respond Ideation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

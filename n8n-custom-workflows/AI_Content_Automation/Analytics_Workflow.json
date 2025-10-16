@@ -1,0 +1,123 @@
+{
+  "name": "Analytics_Workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "path": "webhook/analytics/start",
+        "methods": [
+          "POST"
+        ],
+        "responseMode": "onReceived"
+      },
+      "id": "1",
+      "name": "Webhook Analytics Start",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [200, 300]
+    },
+    {
+      "parameters": {
+        "url": "https://api.linkedin.com/v2/organizationPageStatistics?q=organization&organization=urn:li:organization:XXXX",
+        "authentication": "oAuth2",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "X-Restli-Protocol-Version",
+              "value": "2.0.0"
+            }
+          ]
+        }
+      },
+      "id": "2",
+      "name": "Fetch LinkedIn Stats",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [400, 300]
+    },
+    {
+      "parameters": {
+        "options": {
+          "waitFor": "manual"
+        }
+      },
+      "id": "3",
+      "name": "Wait Review Analytics",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 2,
+      "position": [600, 300]
+    },
+    {
+      "parameters": {
+        "model": "gpt-4o-mini",
+        "prompt": "Analyse ces statistiques et résume les 3 insights principaux en français : {{$json}}"
+      },
+      "id": "4",
+      "name": "AI Insights Generator",
+      "type": "n8n-nodes-base.openAi",
+      "typeVersion": 4,
+      "position": [800, 300]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{ \"data\": [{\"insights\": {{$json}}}] }"
+      },
+      "id": "5",
+      "name": "Respond Analytics",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [1000, 300]
+    }
+  ],
+  "connections": {
+    "Webhook Analytics Start": {
+      "main": [
+        [
+          {
+            "node": "Fetch LinkedIn Stats",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch LinkedIn Stats": {
+      "main": [
+        [
+          {
+            "node": "Wait Review Analytics",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait Review Analytics": {
+      "main": [
+        [
+          {
+            "node": "AI Insights Generator",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Insights Generator": {
+      "main": [
+        [
+          {
+            "node": "Respond Analytics",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}
