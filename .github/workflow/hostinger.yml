@@ -1,0 +1,21 @@
+name: Deploy to Hostinger
+
+on:
+  push:
+    branches: [ hostinger ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Deploy to Hostinger
+        uses: hostinger/deploy-on-vps@v1
+        with:
+          api-key: ${{ secrets.HOSTINGER_API_KEY }}
+          virtual-machine: ${{ vars.HOSTINGER_VM_ID }}
+          project-name: localai
+          docker-compose-path: docker-compose.yml
+          #environment-variables: |
+          #  N8N_ENCRYPTION_KEY=${{ secrets.N8N_ENCRYPTION_KEY }}
