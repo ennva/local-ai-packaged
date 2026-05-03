@@ -3,6 +3,15 @@
     email {$LETSENCRYPT_EMAIL}
 }
 
+# SecuraOps Website
+# SecuraOps Website
+{$SECURAOPS_HOSTNAME} {
+    reverse_proxy securaops_web:80
+    encode gzip zstd
+    header Cache-Control "public, max-age=31536000, immutable" /assets/*
+    tls services@securaops.site
+}
+
 # N8N
 {$N8N_HOSTNAME} {
     # For domains, Caddy will automatically use Let's Encrypt

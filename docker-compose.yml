@@ -54,6 +54,25 @@ x-init-ollama: &init-ollama
     - "sleep 3; OLLAMA_HOST=ollama:11434 ollama pull qwen2.5:7b-instruct-q4_K_M; OLLAMA_HOST=ollama:11434 ollama pull nomic-embed-text"
 
 services:
+  securaops_web:
+    build:
+      context: .
+      dockerfile: securaops/Dockerfile
+    image: securaops/web:latest
+    restart: unless-stopped
+    # publish a host port so you can access nginx from the host (use 8080 to avoid privileged port)
+    # uncomment if Caddy reversed-proxy not used
+    #ports:
+    #  - "8083:80"
+    expose:
+      - 80/tcp
+    environment:
+      - NODE_ENV=production
+    healthcheck:
+      test: ["CMD-SHELL","curl -f http://localhost/ || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
   flowise:
     image: flowiseai/flowise
     restart: unless-stopped
@@ -148,6 +167,7 @@ services:
       - caddy-data:/data:rw
       - caddy-config:/config:rw
     environment:
+      - SECURAOPS_HOSTNAME=${SECURAOPS_HOSTNAME:-":80"}
       - N8N_HOSTNAME=${N8N_HOSTNAME:-":8001"}
       - WEBUI_HOSTNAME=${WEBUI_HOSTNAME:-":8002"}
       - FLOWISE_HOSTNAME=${FLOWISE_HOSTNAME:-":8003"}
