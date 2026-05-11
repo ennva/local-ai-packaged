@@ -1,4 +1,5 @@
 .env
+.env.*
 volumes/
 shared/
 neo4j/
@@ -18,3 +19,6 @@ searxng/uwsgi*
 !ansible.cfg
 .vault_pass
 !.vault_pass.example
+
+# supabase submodule
+supabase/
