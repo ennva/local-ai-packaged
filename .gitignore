@@ -20,5 +20,9 @@ searxng/uwsgi*
 .vault_pass
 !.vault_pass.example
 
+<<<<<<< HEAD
 # supabase submodule
+=======
+# Supabase submodule
+>>>>>>> 5ff23ee (Omit submodule)
 supabase/
