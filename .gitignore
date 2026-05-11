@@ -1,4 +1,8 @@
 .env
+<<<<<<< HEAD
+=======
+.env.bkp
+>>>>>>> a214525 (Secret discovered)
 .env.*
 volumes/
 shared/
